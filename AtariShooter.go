@@ -42,4 +42,23 @@ func main(){
 
 	
 
+		ev := screen.PollEvent();
+		switch ev := ev.(type){
+		case *tcell.EventKey:
+			
+			switch ev.Rune(){
+			case 'w' , 'd' , 's' , 'a':
+				player.Move(ev.Rune())
+			case 'e':
+				bullet_right := NewSprite('>',player.X+1,player.Y+11)
+				bullet_right.Draw(screen)
+				// for shot {
+				// 	bullet.Y += 1
+				// }
+			case 'q':
+				screen.Fini()
+			}
+		}
+			
+	}
 }
