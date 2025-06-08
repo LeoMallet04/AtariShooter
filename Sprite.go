@@ -17,7 +17,7 @@ func NewSprite(char rune, x, y int) *Sprite {
 	}
 }
 
-func (s *Sprite) Draw(screen tcell.Screen){
+func (s *Sprite) Draw(screen tcell.Screen) {
 	screen.SetContent(
 		s.X,
 		s.Y,
@@ -27,8 +27,8 @@ func (s *Sprite) Draw(screen tcell.Screen){
 	)
 }
 
-func (s *Sprite) Move(direction rune){
-	switch direction{
+func (s *Sprite) Move(direction rune) {
+	switch direction {
 	case 'w':
 		s.Y -= 1
 	case 'a':

@@ -2,63 +2,112 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 )
 
-func main(){
+// extende a estrutura Sprite e o Dir armazena a direcao do disparo
+type Bullet struct {
+	Sprite
+	Dir rune
+}
+
+// cria um novo projetil com base na posicao atual do player
+func NewBullet(x, y int, dir rune) *Bullet {
+	char := map[rune]rune{'w': '^', 'a': '<', 's': 'v', 'd': '>'}[dir]
+	return &Bullet{
+		Sprite: Sprite{Char: char, X: x, Y: y},
+		Dir:    dir,
+	}
+}
+
+// move a bala
+func (b *Bullet) Update() {
+	switch b.Dir {
+	case 'w':
+		b.Y -= 1
+	case 'a':
+		b.X -= 1
+	case 's':
+		b.Y += 1
+	case 'd':
+		b.X += 1
+	}
+}
+
+func main() {
+
 	//Cria nova tela
 	screen, err := tcell.NewScreen()
 
-	//Trata o erro
-	if err != nil{
-		log.Fatal(err)
-	}
-
-	//Adia o comportamento de limpar a tela como ultima coisa
-	defer screen.Fini();
-
-	//Inicializa a tela criada 
-	err = screen.Init();
-	
+	//trata o erro
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//game init
-	player := NewSprite('@',10,10)
+	//Adia o comportamento de limpar a tela como  ultima coisa
+	defer screen.Fini()
 
-	//Loop principal do jogo
-	running := true 
+	if err := screen.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	player := NewSprite('@', 40, 12)
+	var bullets []*Bullet
+	playerDir := 'd' // direcao inicial do player
+
+	ticker := time.NewTicker(50 * time.Millisecond)
+	defer ticker.Stop()
+
+	running := true
 	for running {
+		select {
+		case <-ticker.C:
+			screen.Clear()
+			player.Draw(screen)
 
-		//game init
+			w, h := screen.Size() // pega largura (w) e altura (h) da tela
 
-		screen.Clear()
+			// atualiza e desenhas as blas
+			newBullets := []*Bullet{}
+			for _, b := range bullets {
+				b.Update()
+				if b.X >= 0 && b.X < w && b.Y >= 0 && b.Y < h {
+					b.Draw(screen)
+					newBullets = append(newBullets, b)
+				}
+			}
+			bullets = newBullets
 
-		player.Draw(screen)
-		
-		screen.Show()
+			screen.Show()
 
-	
-
-		ev := screen.PollEvent();
-		switch ev := ev.(type){
-		case *tcell.EventKey:
-			
-			switch ev.Rune(){
-			case 'w' , 'd' , 's' , 'a':
-				player.Move(ev.Rune())
-			case 'e':
-				bullet_right := NewSprite('>',player.X+1,player.Y+11)
-				bullet_right.Draw(screen)
-				// for shot {
-				// 	bullet.Y += 1
-				// }
-			case 'q':
-				screen.Fini()
+			for screen.HasPendingEvent() {
+				ev := screen.PollEvent()
+				switch ev := ev.(type) {
+				case *tcell.EventKey:
+					switch ev.Rune() {
+					case 'w', 'a', 's', 'd':
+						playerDir = ev.Rune()
+						player.Move(ev.Rune())
+					case 'e':
+						var bulletX, bulletY int
+						switch playerDir {
+						case 'w':
+							bulletX, bulletY = player.X, player.Y-1
+						case 'a':
+							bulletX, bulletY = player.X-1, player.Y
+						case 's':
+							bulletX, bulletY = player.X, player.Y+1
+						case 'd':
+							bulletX, bulletY = player.X+1, player.Y
+						}
+						bullets = append(bullets, NewBullet(bulletX, bulletY, playerDir))
+					case 'q':
+						running = false
+					}
+				}
 			}
 		}
-			
 	}
 }
