@@ -38,5 +38,4 @@ func (s *Sprite) Move(direction rune) {
 	case 'd':
 		s.X += 1
 	}
-
 }

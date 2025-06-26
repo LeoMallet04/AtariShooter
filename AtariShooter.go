@@ -7,33 +7,10 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-// extende a estrutura Sprite e o Dir armazena a direcao do disparo
-type Bullet struct {
-	Sprite
-	Dir rune
-}
+// comunica com o outro processo e atualiza as balas
+func (newBullets *Bullet[], link PP2PLink) update_procs {
 
-// cria um novo projetil com base na posicao atual do player
-func NewBullet(x, y int, dir rune) *Bullet {
-	char := map[rune]rune{'w': '^', 'a': '<', 's': 'v', 'd': '>'}[dir]
-	return &Bullet{
-		Sprite: Sprite{Char: char, X: x, Y: y},
-		Dir:    dir,
-	}
-}
-
-// move a bala
-func (b *Bullet) Update() {
-	switch b.Dir {
-	case 'w':
-		b.Y -= 1
-	case 'a':
-		b.X -= 1
-	case 's':
-		b.Y += 1
-	case 'd':
-		b.X += 1
-	}
+	var receivedBullets []*Bullets
 }
 
 func main() {
@@ -69,7 +46,9 @@ func main() {
 
 			w, h := screen.Size() // pega largura (w) e altura (h) da tela
 
-			// atualiza e desenhas as blas
+			update_procs(*newBullets)
+
+			// atualiza e desenhas as balas
 			newBullets := []*Bullet{}
 			for _, b := range bullets {
 				b.Update()
@@ -82,6 +61,7 @@ func main() {
 
 			screen.Show()
 
+			newBullets := []*Bullet{}
 			for screen.HasPendingEvent() {
 				ev := screen.PollEvent()
 				switch ev := ev.(type) {
@@ -102,7 +82,7 @@ func main() {
 						case 'd':
 							bulletX, bulletY = player.X+1, player.Y
 						}
-						bullets = append(bullets, NewBullet(bulletX, bulletY, playerDir))
+						new_Bullets = append(new_Bullets, NewBullet(bulletX, bulletY, playerDir))
 					case 'q':
 						running = false
 					}
