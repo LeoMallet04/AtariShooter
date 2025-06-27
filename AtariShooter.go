@@ -73,9 +73,13 @@ func main() {
 			newBullets := []*Bullet{}
 			for _, b := range bullets {
 				b.Update()
-				if b.X >= 0 && b.X < w && b.Y >= 0 && b.Y < h {
-					b.Draw(screen)
-					newBullets = append(newBullets, b)
+				//Verifica se a posição x,yu da bala não é nula
+				if b.X >= 0 && b.Y >= 0{
+					//Verifica se a bala ainda está na tela
+					if b.X < w && b.Y < h{
+						b.Draw(screen)
+						newBullets = append(newBullets, b)
+					}
 				}
 			}
 			bullets = newBullets
