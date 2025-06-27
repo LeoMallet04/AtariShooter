@@ -8,33 +8,6 @@ import (
 )
 
 // extende a estrutura Sprite e o Dir armazena a direcao do disparo
-type Bullet struct {
-	Sprite
-	Dir rune
-}
-
-// cria um novo projetil com base na posicao atual do player
-func NewBullet(x, y int, dir rune) *Bullet {
-	char := map[rune]rune{'w': '^', 'a': '<', 's': 'v', 'd': '>'}[dir]
-	return &Bullet{
-		Sprite: Sprite{Char: char, X: x, Y: y},
-		Dir:    dir,
-	}
-}
-
-// move a bala
-func (b *Bullet) Update() {
-	switch b.Dir {
-	case 'w':
-		b.Y -= 1
-	case 'a':
-		b.X -= 1
-	case 's':
-		b.Y += 1
-	case 'd':
-		b.X += 1
-	}
-}
 
 func main() {
 
