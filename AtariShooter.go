@@ -8,9 +8,23 @@ import (
 )
 
 // comunica com o outro processo e atualiza as balas
-func (newBullets *Bullet[], link PP2PLink) update_procs {
+func (newBullets Bullet,playerMove rune link PP2PLink, sendAddress String) UpadteProcs {
 
 	var receivedBullets []*Bullets
+	msg := ""
+	for _, b := newBullets {
+		msg += b.ToString() + ","
+	}
+
+	req := link.PP2PLink_Req_Message{
+		To:      sendAddress,
+		Message: msg}
+
+	recv := <- link.Ind
+
+	for _, bulletStr := range strings.Split(recv, ",") {
+		newBullets = append(newBullets, BulletFromString(bulletStr))
+	}
 }
 
 func main() {
@@ -46,7 +60,7 @@ func main() {
 
 			w, h := screen.Size() // pega largura (w) e altura (h) da tela
 
-			update_procs(*newBullets)
+			UpadteProcs(*newBullets)
 
 			// atualiza e desenhas as balas
 			newBullets := []*Bullet{}
