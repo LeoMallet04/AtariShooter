@@ -7,7 +7,6 @@ import (
 type Sprite struct {
 	Char rune
 	X, Y int
-	life int
 }
 
 func NewSprite(char rune, x, y int) *Sprite {
@@ -15,7 +14,6 @@ func NewSprite(char rune, x, y int) *Sprite {
 		Char: char,
 		X:    x,
 		Y:    y,
-		life: 3,
 	}
 }
 
