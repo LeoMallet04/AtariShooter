@@ -1,4 +1,4 @@
-package Bullet
+package main
 
 import (
 	"fmt"
@@ -53,8 +53,8 @@ func BulletFromString(s string) (*Bullet, error) {
 		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, Y: %d", y)
 	}
 	direcao := []rune(parts[2])
-		if len(dirRune) != 1 {
-		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, direca: %s", direcao)
+		if len(direcao) != 1 {
+		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, direca: %s", string(direcao))
 	}
-	return &Bullet{X: x, Y: y, Dir: dirRune[0]}, nil
+	return &Bullet{Sprite: *NewSprite(direcao[0],x,y), Dir: direcao[0]}, nil
 }
