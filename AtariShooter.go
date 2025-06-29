@@ -40,6 +40,43 @@ func EncodeGameState(state GameState) string {
 
 	return fmt.Sprintf("P[%s]|B[%s]", playerStrings,bulletStrings)
 }
+
+func DecodeGameState(s string) (*GameState, error){
+	parts := strings.Split(s,"|")
+
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("FORMATO INVÁLIDO")
+	}
+
+	pClean := strings.TrimPrefix(strings.TrimSuffix(parts[0], "]"), "P[")
+	bClean := strings.TrimPrefix(strings.TrimSuffix(parts[1], "]"), "B[")
+
+    state := &GameState{}
+
+
+    if pClean != ""{
+		for _, ps := range strings.Split(pClean, ",") {
+            p, err := SpriteFromString(ps)
+			if err != nil{
+				return nil,err
+			}
+			state.Players = append(state.Players,p)
+		}
+	}
+	
+	if bClean != ""{
+		for _, bs := range strings.Split(bClean, ","){
+			b, err := BulletFromString(bs)
+			if err != nil {
+				return nil, err
+			}
+			state.Bullets = append(state.Bullets, b)
+		}
+	}
+
+	return state, nil
+}
+
 	link.Req <- PP2PLink.PP2PLink_Req_Message{
 		To:      sendAddress,
 		Message: msg,
