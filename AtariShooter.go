@@ -2,18 +2,16 @@ package main
 
 import (
 	// "go/printer"
+	"fmt"
 	"log"
 	"strings"
 	"time"
-	// "fmt"
 
 	"atari-shooter/PP2PLink"
 
 	"github.com/gdamore/tcell/v2"
 )
 
-// comunica com o outro processo e atualiza as balas
-func UpdateBullets(newBullets []*Bullet, playerMove rune, link *PP2PLink.PP2PLink, sendAddress string) {
 
 type GameState struct{
 	Bullets []*Bullet
