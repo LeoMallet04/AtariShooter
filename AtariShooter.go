@@ -21,6 +21,25 @@ type GameState struct{
 }
 
 
+func EncodeGameState(state GameState) string {
+	playerStrs := []string{}
+
+	for _, p := range state.Players{
+		playerStrs = append(playerStrs, SpriteToString(p)) 
+	}
+
+	bulletStrs := []string{}
+	
+	for _, b := range state.Bullets{
+		bulletStrs = append(bulletStrs, BulletToString(b))
+	}
+
+	var playerStrings = strings.Join(playerStrs, ",")
+	var bulletStrings = strings.Join(bulletStrs, ",")
+
+
+	return fmt.Sprintf("P[%s]|B[%s]", playerStrings,bulletStrings)
+}
 	link.Req <- PP2PLink.PP2PLink_Req_Message{
 		To:      sendAddress,
 		Message: msg,
