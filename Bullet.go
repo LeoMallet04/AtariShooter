@@ -35,7 +35,7 @@ func (b *Bullet) Update() {
 	}
 }
 
-func (b *Bullet) ToString() string {
+func BulletToString(b *Bullet)string {
 	return fmt.Sprintf("%c,%d;%d;%c",b.Char, b.Sprite.X, b.Sprite.Y, b.Dir)
 }
 
