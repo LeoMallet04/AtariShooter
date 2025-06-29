@@ -95,6 +95,18 @@ func main() {
 			newBullets := []*Bullet{}
 			for screen.HasPendingEvent() {
 				ev := screen.PollEvent()
+func initPlayers(quantPlayer int, playerC chan Sprite){
+	for i:= 0; i < quantPlayer; i++{
+		symbol:= rune('@' +i)
+		x:= 15 *i+1
+		y:= 10 *i+1
+
+		player := NewSprite(symbol,x,y)
+
+		playerC <- *player
+	}
+	close(playerC)
+}
 				switch ev := ev.(type) {
 				case *tcell.EventKey:
 					switch ev.Rune() {
