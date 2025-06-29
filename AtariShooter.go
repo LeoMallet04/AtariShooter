@@ -46,11 +46,28 @@ func UpdateBullets(newBullets []*Bullet, playerMove rune, link *PP2PLink.PP2PLin
 
 
 func main() {
+	enderecoLocal := "localhost:8080"
+	enderecoRemote := "localhost:8085"
+
+	link := PP2PLink.NewPP2PLink(enderecoLocal, true)
+
+	// link.Req <- PP2PLink.PP2PLink_Req_Message{
+	// 	To: enderecoRemote,
+	// 	Message: "Oi, tudo bem?",
+	// }
+
+	// for i := 0; i < 5; i++{
+	// 	msg := <- link.Ind
+	// 	fmt.Printf("%s Tudo simm\n", msg)
+	// }
+
+	playerC:= make(chan Sprite)
+	// bulletC:= make(chan Bullet)
+
+	go initPlayers(2,playerC)
 
 	//Cria nova tela
 	screen, err := tcell.NewScreen()
-
-	//trata o erro
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,44 +79,56 @@ func main() {
 		log.Fatal(err)
 	}
 
-	player := NewSprite('@', 40, 12)
-	var bullets []*Bullet
-	playerDir := 'd' // direcao inicial do player
+	players:= []Sprite{}
+	dirs:= []rune{}
+	for p := range playerC{
+		players =append(players, p)
+		dirs = append(dirs, 'd')
+	}
 
+	var bullets = []*Bullet{}
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 
 	running := true
 	for running {
-		select {
-		case <-ticker.C:
-			screen.Clear()
-			player.Draw(screen)
+		<-ticker.C
+		screen.Clear()
+		for _,p:= range players{
+			p.Draw(screen)
+		}
 
-			w, h := screen.Size() // pega largura (w) e altura (h) da tela
+		w, h := screen.Size() // pega largura (w) e altura (h) da tela
 
-			UpadteProcs(*newBullets)
+		UpdateBullets(bullets,players[0].Char,link,enderecoRemote)
 
-			// atualiza e desenhas as balas
-			newBullets := []*Bullet{}
-			for _, b := range bullets {
-				b.Update()
-				//Verifica se a posição x,yu da bala não é nula
-				if b.X >= 0 && b.Y >= 0{
-					//Verifica se a bala ainda está na tela
-					if b.X < w && b.Y < h{
-						b.Draw(screen)
-						newBullets = append(newBullets, b)
-					}
+		// atualiza e desenhas as balas
+		newBullets := []*Bullet{}
+		for _, b := range bullets {
+			b.Update()
+			//Verifica se a posição x,yu da bala não é nula
+			if b.X >= 0 && b.Y >= 0{
+				//Verifica se a bala ainda está na tela
+				if b.X < w && b.Y < h{
+					b.Draw(screen)
+					newBullets = append(newBullets, b)
 				}
 			}
-			bullets = newBullets
+		}
+		bullets = newBullets
 
-			screen.Show()
+		screen.Show()
 
-			newBullets := []*Bullet{}
-			for screen.HasPendingEvent() {
-				ev := screen.PollEvent()
+		// newBullets := []*Bullet{}
+		for screen.HasPendingEvent() {
+			ev := screen.PollEvent()
+			moveSprites(ev,players,dirs,&bullets,&running)
+		}
+	}
+}
+
+
+
 func initPlayers(quantPlayer int, playerC chan Sprite){
 	for i:= 0; i < quantPlayer; i++{
 		symbol:= rune('@' +i)
