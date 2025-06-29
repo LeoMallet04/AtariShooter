@@ -102,23 +102,15 @@ func SyncGameState(localState *GameState, link *PP2PLink.PP2PLink, sendAddress s
 
 
 func main() {
-	enderecoLocal := "localhost:8080"
-	enderecoRemote := "localhost:8085"
+	enderecoLocal := "192.168.1.68:8080"
+	enderecoRemote := "192.168.1.68:8085"
 
 	link := PP2PLink.NewPP2PLink(enderecoLocal, true)
 
-	// link.Req <- PP2PLink.PP2PLink_Req_Message{
-	// 	To: enderecoRemote,
-	// 	Message: "Oi, tudo bem?",
-	// }
-
-	// for i := 0; i < 5; i++{
-	// 	msg := <- link.Ind
-	// 	fmt.Printf("%s Tudo simm\n", msg)
-	// }
+	link.Start(enderecoRemote)
 
 	playerC:= make(chan Sprite)
-	// bulletC:= make(chan Bullet)
+
 
 	go initPlayers(2,playerC)
 
@@ -135,14 +127,26 @@ func main() {
 		log.Fatal(err)
 	}
 
+	localState := &GameState{
+		Bullets: []*Bullet{},
+		Players: []*Sprite{},
+	}
+
+	remoteState := &GameState{
+		Bullets: []*Bullet{},
+		Players: []*Sprite{},
+	}
+
+	
+
 	players:= []Sprite{}
 	dirs:= []rune{}
 	for p := range playerC{
 		players =append(players, p)
-		dirs = append(dirs, 'd')
+		dirs = append(dirs, 'd')	
+		localState.Players = append(localState.Players, &players[len(players)-1])
 	}
 
-	var bullets = []*Bullet{}
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 
@@ -150,17 +154,22 @@ func main() {
 	for running {
 		<-ticker.C
 		screen.Clear()
-		for _,p:= range players{
+
+		for _,p:= range append(localState.Players, remoteState.Players...){
 			p.Draw(screen)
 		}
 
 		w, h := screen.Size() // pega largura (w) e altura (h) da tela
-
-		UpdateBullets(bullets,players[0].Char,link,enderecoRemote)
+		recvState := SyncGameState(localState,link,enderecoRemote)
+		if recvState != nil{
+			remoteState = recvState
+		}
 
 		// atualiza e desenhas as balas
+		allBullets := append(localState.Bullets,remoteState.Bullets...)
 		newBullets := []*Bullet{}
-		for _, b := range bullets {
+
+		for _, b := range allBullets {
 			b.Update()
 			//Verifica se a posição x,yu da bala não é nula
 			if b.X >= 0 && b.Y >= 0{
@@ -171,14 +180,12 @@ func main() {
 				}
 			}
 		}
-		bullets = newBullets
+		localState.Bullets = newBullets
 
 		screen.Show()
-
-		// newBullets := []*Bullet{}
 		for screen.HasPendingEvent() {
 			ev := screen.PollEvent()
-			moveSprites(ev,players,dirs,&bullets,&running)
+			moveSprites(ev, localState, dirs, &running)
 		}
 	}
 }
