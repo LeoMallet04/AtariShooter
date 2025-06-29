@@ -35,30 +35,27 @@ func (b *Bullet) Update() {
 	}
 }
 
-func BulletToString(b *Bullet)string {
-	return fmt.Sprintf("%c,%d;%d;%c",b.Char, b.Sprite.X, b.Sprite.Y, b.Dir)
+func BulletToString(b *Bullet) string {
+	return fmt.Sprintf("%c;%d;%d;%c", b.Char, b.X, b.Y, b.Dir)
 }
 
 func BulletFromString(s string) (*Bullet, error) {
 	parts := strings.Split(s, ";")
 	if len(parts) != 4 {
-		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, número de args: %s", s)
+		return nil, fmt.Errorf("ERRO: conversao Bullet, partes: %v", parts)
 	}
 	char := []rune(parts[0])
-	if len(char) != 1{
-		return nil, fmt.Errorf("ERRO: conversão de volta para a bala, Char: %c",char)
-	}
 	x, err := strconv.Atoi(parts[1])
 	if err != nil {
-		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, X: %d", x)
+		return nil, fmt.Errorf("erro no X: %v", err)
 	}
 	y, err := strconv.Atoi(parts[2])
 	if err != nil {
-		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, Y: %d", y)
+		return nil, fmt.Errorf("erro no Y: %v", err)
 	}
-	direcao := []rune(parts[3])
-		if len(direcao) != 1 {
-		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, direca: %s", string(direcao))
+	dir := []rune(parts[3])
+	if len(dir) != 1 {
+		return nil, fmt.Errorf("erro na direção")
 	}
-	return &Bullet{Sprite: *NewSprite(char[0],x,y), Dir: direcao[0]}, nil
+	return &Bullet{Sprite: Sprite{Char: char[0], X: x, Y: y}, Dir: dir[0]}, nil
 }
