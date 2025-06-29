@@ -8,24 +8,37 @@ import (
 )
 
 // comunica com o outro processo e atualiza as balas
-func UpdateProcs (newBullets []*Bullet, playerMove rune, link PP2PLink, sendAddress string) {
+func UpdateBullets(newBullets []*Bullet, playerMove rune, link *PP2PLink.PP2PLink, sendAddress string) {
 
-	var receivedBullets []*Bullets
+	// var receivedBullets []*Bullet
 	msg := ""
-	for _, b := newBullets {
-		msg += b.ToString() + ","
+	bulletStr := []string{}
+	for _, b := range newBullets {
+		bulletStr = append(bulletStr, BulletToString(b))
 	}
+	msg += strings.Join(bulletStr, ",")
 
-	req := link.PP2PLink_Req_Message{
+	link.Req <- PP2PLink.PP2PLink_Req_Message{
 		To:      sendAddress,
-		Message: msg}
-
-	recv := <- link.Ind
-
-	for _, bulletStr := range strings.Split(recv, ",") {
-		newBullets = append(newBullets, BulletFromString(bulletStr))
+		Message: msg,
 	}
+
+	select {
+		case recv := <- link.Ind:
+			for _, bulletStr := range strings.Split(recv.Message, ",") {
+				if bulletStr == ""{ continue }
+				bullet, err := BulletFromString(bulletStr)
+				if err != nil {
+					log.Printf("Erro: %s",err)
+				}else{
+					newBullets = append(newBullets, bullet)
+				}
+			}
+		case <- time.After(5 * time.Millisecond):
+	} 
+	
 }
+
 
 func main() {
 
