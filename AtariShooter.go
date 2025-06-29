@@ -15,13 +15,11 @@ import (
 // comunica com o outro processo e atualiza as balas
 func UpdateBullets(newBullets []*Bullet, playerMove rune, link *PP2PLink.PP2PLink, sendAddress string) {
 
-	// var receivedBullets []*Bullet
-	msg := ""
-	bulletStr := []string{}
-	for _, b := range newBullets {
-		bulletStr = append(bulletStr, BulletToString(b))
-	}
-	msg += strings.Join(bulletStr, ",")
+type GameState struct{
+	Bullets []*Bullet
+	Players []*Sprite
+}
+
 
 	link.Req <- PP2PLink.PP2PLink_Req_Message{
 		To:      sendAddress,
