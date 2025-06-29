@@ -77,22 +77,32 @@ func DecodeGameState(s string) (*GameState, error){
 	return state, nil
 }
 
+// comunica com o outro processo e atualiza as balas
+
+func SyncGameState(localState *GameState, link *PP2PLink.PP2PLink, sendAddress string) *GameState{
+    msg := EncodeGameState(*localState)
+
 	link.Req <- PP2PLink.PP2PLink_Req_Message{
-		To:      sendAddress,
+		To: sendAddress,
 		Message: msg,
 	}
 
 	select {
 		case recv := <- link.Ind:
-			for _, bulletStr := range strings.Split(recv.Message, ",") {
-				if bulletStr == ""{ continue }
-				bullet, err := BulletFromString(bulletStr)
-				if err != nil {
-					log.Printf("Erro: %s",err)
-				}else{
-					newBullets = append(newBullets, bullet)
-				}
+			remoteState, err := DecodeGameState(recv.Message)
+			if err != nil {
+				log.Printf("Erro ao decodificar: '%s' - erro: %v", recv.Message, err)
+				return nil
 			}
+			return remoteState
+	    case <- time.After(5 *time.Millisecond):
+			return nil
+			}
+			}
+		case <- time.After(5 * time.Millisecond):
+	} 
+	
+	}  
 		case <- time.After(5 * time.Millisecond):
 	} 
 	
