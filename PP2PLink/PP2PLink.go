@@ -26,12 +26,12 @@ import (
 type PP2PLink_Req_Message struct {
 	To      string
 	Message string
-}
+} // Representa a mensagem que vai ser enviada a outro processo
 
 type PP2PLink_Ind_Message struct {
 	From    string
 	Message string
-}
+}// Representa a mensagem recebida de outra processo
 
 type PP2PLink struct {
 	Ind   chan PP2PLink_Ind_Message
