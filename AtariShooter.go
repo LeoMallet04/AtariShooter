@@ -107,30 +107,66 @@ func initPlayers(quantPlayer int, playerC chan Sprite){
 	}
 	close(playerC)
 }
-				switch ev := ev.(type) {
-				case *tcell.EventKey:
-					switch ev.Rune() {
-					case 'w', 'a', 's', 'd':
-						playerDir = ev.Rune()
-						player.Move(ev.Rune())
-					case 'e':
-						var bulletX, bulletY int
-						switch playerDir {
-						case 'w':
-							bulletX, bulletY = player.X, player.Y-1
-						case 'a':
-							bulletX, bulletY = player.X-1, player.Y
-						case 's':
-							bulletX, bulletY = player.X, player.Y+1
-						case 'd':
-							bulletX, bulletY = player.X+1, player.Y
-						}
-						new_Bullets = append(new_Bullets, NewBullet(bulletX, bulletY, playerDir))
-					case 'q':
-						running = false
-					}
-				}
+
+
+func moveSprites(ev tcell.Event,players[]Sprite,dirs[]rune, bullets *[]*Bullet, running *bool){
+	switch ev := ev.(type) {
+	case *tcell.EventKey:
+	switch ev.Key() {
+		// Player 2 - setas
+		case tcell.KeyUp:
+			dirs[1] = 'w'
+			players[1].Move('w')
+		case tcell.KeyDown:
+			dirs[1] = 's'
+			players[1].Move('s')
+		case tcell.KeyLeft:
+			dirs[1] = 'a'
+			players[1].Move('a')
+		case tcell.KeyRight:
+			dirs[1] = 'd'
+			players[1].Move('d')
+		case tcell.KeyEnter:
+			var bx, by int
+			switch dirs[1] {
+			case 'w':
+				bx, by = players[1].X, players[1].Y-1
+			case 'a':
+				bx, by = players[1].X-1, players[1].Y
+			case 's':
+				bx, by = players[1].X, players[1].Y+1
+			case 'd':
+				bx, by = players[1].X+1, players[1].Y
 			}
+			bullet := NewBullet(bx, by, dirs[1])
+			bullet.Char = '*' // Diferencia os tiros do player 2
+			*bullets = append(*bullets, bullet)
+
+		// Player 1 - wasd + e para atirar
+		case tcell.KeyRune:
+			switch ev.Rune() {
+			case 'w', 'a', 's', 'd':
+				dirs[0] = ev.Rune()
+				players[0].Move(ev.Rune())
+			case 'e':
+				var bx, by int
+				switch dirs[0] {
+				case 'w':
+					bx, by = players[0].X, players[0].Y-1
+				case 'a':
+					bx, by = players[0].X-1, players[0].Y
+				case 's':
+					bx, by = players[0].X, players[0].Y+1
+				case 'd':
+					bx, by = players[0].X+1, players[0].Y
+				}
+				*bullets = append(*bullets, NewBullet(bx, by, dirs[0]))
+			case 'q':
+				*running = false
+			}
+		case tcell.KeyEsc:
+			*running = false
 		}
 	}
+	
 }
