@@ -48,9 +48,9 @@ func SpriteToString(s *Sprite) string{
 	return fmt.Sprintf("%c;%d,%d",s.Char, s.X, s.Y)
 }
 
-func StringToSprite(str string) (*Sprite, error){
+func SpriteFromString(str string) (*Sprite, error){
 	parts := strings.Split(str, ";")
-	if len(parts) != 4 {
+	if len(parts) != 3 {
 		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, número de args: %s", str)
 	}
 	char := []rune(parts[0])
