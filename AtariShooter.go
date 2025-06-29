@@ -97,15 +97,7 @@ func SyncGameState(localState *GameState, link *PP2PLink.PP2PLink, sendAddress s
 			return remoteState
 	    case <- time.After(5 *time.Millisecond):
 			return nil
-			}
-			}
-		case <- time.After(5 * time.Millisecond):
-	} 
-	
 	}  
-		case <- time.After(5 * time.Millisecond):
-	} 
-	
 }
 
 
