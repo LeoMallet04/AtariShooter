@@ -37,6 +37,7 @@ func DecodeGameState(s string) (*GameState, error){
 	parts := strings.Split(s,"|")
 
 	if len(parts) != 2 {
+		log.Printf("Mensagem de Erro: %s",s)
 		return nil, fmt.Errorf("FORMATO INVÁLIDO")
 	}
 
@@ -46,14 +47,12 @@ func DecodeGameState(s string) (*GameState, error){
     state := &GameState{}
 
 
-    if pClean != ""{
-		for _, ps := range strings.Split(pClean, ",") {
-            p, err := SpriteFromString(ps)
-			if err != nil{
-				return nil,err
-			}
-			state.Players = append(state.Players,p)
+	if pClean != "" {
+		p, err := SpriteFromString(pClean)
+		if err != nil {
+			return nil, err
 		}
+		state.Players = append(state.Players, p)
 	}
 	
 	if bClean != ""{
