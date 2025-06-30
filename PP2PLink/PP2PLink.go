@@ -67,7 +67,7 @@ func (module *PP2PLink) Start(address string) {
 		for {
 			// aceita repetidamente tentativas novas de conexao
 			conn, err := listen.Accept()
-			module.outDbg("ok   : conexao aceita com outro processo.")
+			// module.outDbg("ok   : conexao aceita com outro processo.")
 			// para cada conexao lanca rotina de tratamento
 			go func() {
 				// repetidamente recebe mensagens na conexao TCP (sem fechar)
@@ -80,7 +80,7 @@ func (module *PP2PLink) Start(address string) {
 					bufTam := make([]byte, 4) //       // le tamanho da mensagem
 					_, err := io.ReadFull(conn, bufTam)
 					if err != nil {
-						module.outDbg("erro : " + err.Error() + " conexao fechada pelo outro processo.")
+						// module.outDbg("erro : " + err.Error() + " conexao fechada pelo outro processo.")
 						break
 					}
 					tam, err := strconv.Atoi(string(bufTam))
@@ -118,7 +118,7 @@ func (module *PP2PLink) Send(message PP2PLink_Req_Message) {
 	if conn, ok = module.Cache[message.To]; ok {
 	} else { // se nao existe, abre e guarda na cache
 		conn, err = net.Dial("tcp", message.To)
-		module.outDbg("ok   : conexao iniciada com outro processo")
+		// module.outDbg("ok   : conexao iniciada com outro processo")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -132,19 +132,19 @@ func (module *PP2PLink) Send(message PP2PLink_Req_Message) {
 		str = "0" + str
 	}
 	if !(len(str) == 4) {
-		module.outDbg("ERROR AT PPLINK MESSAGE SIZE CALCULATION - INVALID MESSAGES MAY BE IN TRANSIT")
+		// module.outDbg("ERROR AT PPLINK MESSAGE SIZE CALCULATION - INVALID MESSAGES MAY BE IN TRANSIT")
 	}
 	_, err = fmt.Fprintf(conn, str)             // escreve 4 caracteres com tamanho
 	_, err = fmt.Fprintf(conn, message.Message) // escreve a mensagem com o tamanho calculado
 	if err != nil {
-		module.outDbg("erro : " + err.Error() + ". Conexao fechada. 1 tentativa de reabrir:")
+		// module.outDbg("erro : " + err.Error() + ". Conexao fechada. 1 tentativa de reabrir:")
 		conn, err = net.Dial("tcp", message.To)
 		if err != nil {
 			//fmt.Println(err)
-			module.outDbg("       " + err.Error())
+			// module.outDbg("       " + err.Error())
 			return
 		} else {
-			module.outDbg("ok   : conexao iniciada com outro processo.")
+			// module.outDbg("ok   : conexao iniciada com outro processo.")
 		}
 		module.Cache[message.To] = conn
 		_, err = fmt.Fprintf(conn, str)             // escreve 4 caracteres com tamanho
