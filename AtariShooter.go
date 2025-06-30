@@ -172,6 +172,13 @@ func main() {
 				}
 			}
 		}
+
+		for _, br := range remoteState.Bullets {
+			br.Update()
+			br.Draw(screen)
+			newBullets = append(newBullets, br)
+		}
+
 		localState.Bullets = newBullets
 		
 		screen.Show()
