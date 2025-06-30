@@ -16,22 +16,20 @@ import (
 
 type GameState struct{
 	Bullets []*Bullet
+	Players []*Sprite
 	Players []*Sprite	
+	Players []*Sprite
+	bullet    *Bullet	
+	bullet    *Bullet	
 }
 
 
 func EncodeGameState(state GameState) string {
 	playerStr := SpriteToString(state.Players[0])
 
-	bulletStrs := []string{}
-	
-	for _, b := range state.Bullets{
-		bulletStrs = append(bulletStrs, BulletToString(b))
-	}
-	var bulletStrings = strings.Join(bulletStrs, ",")
+	bulletStr := BulletToString(state.bullet)
 
-
-	return fmt.Sprintf("P[%s]|B[%s]", playerStr,bulletStrings)
+	return fmt.Sprintf("P[%s]|B[%s]", playerStr,bulletStr)
 }
 
 func DecodeGameState(s string) (*GameState, error){
@@ -57,17 +55,29 @@ func DecodeGameState(s string) (*GameState, error){
 	}
 	
 	if bClean != ""{
-		for _, bs := range strings.Split(bClean, ","){
-			b, err := BulletFromString(bs)
-			if err != nil {
-				return nil, err
-			}
+		b, err := BulletFromString(bClean)
+		if err != nil {
+			return nil, err
+		}
+			state.Bullets = append(state.Bullets, b)
+		b, err := BulletFromString(bClean)
+		if err != nil {
+			return nil, err
+		}
 			state.Bullets = append(state.Bullets, b)
 		}
 	}
 
 	return state, nil
 }
+		if b.X != -1 || b.Y != -1{ 
+			state.Bullets = append(state.Bullets, b)
+		}
+	}
+
+	return state, nil
+}
+		if b.X != -1 || b.Y != -1{ 
 
 // comunica com o outro processo e atualiza as balas
 
