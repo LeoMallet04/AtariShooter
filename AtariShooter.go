@@ -128,7 +128,7 @@ func main() {
 	dirs := make([]rune, 2)
 	dirs = append(dirs, 'd')
 
-	ticker := time.NewTicker(100 * time.Millisecond)
+	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 
 	running := true
