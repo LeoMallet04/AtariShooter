@@ -150,9 +150,25 @@ func main() {
 		<-ticker.C
 		screen.Clear()
 
-		for _,p:= range append(localState.Players, remoteState.Players...){
+		updated := SyncGameState(localState, link, enderecoRemote)
+		if updated != nil {
+			remoteStateMutex.Lock()
+			remoteState = updated
+			remoteStateMutex.Unlock()
+		}
+		
+		remoteStateMutex.RLock()
+		for _, p := range remoteState.Players {
 			p.Draw(screen)
 		}
+		remoteStateMutex.RUnlock()
+		
+		remoteStateMutex.RLock()
+		for _, p := range localState.Players {
+			p.Draw(screen)
+		}
+		remoteStateMutex.RUnlock()
+		
 
 		w, h := screen.Size() // pega largura (w) e altura (h) da tela
 		recvState := SyncGameState(localState,link,enderecoRemote)
