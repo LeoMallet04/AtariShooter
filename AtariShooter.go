@@ -20,23 +20,17 @@ type GameState struct{
 
 
 func EncodeGameState(state GameState) string {
-	playerStrs := []string{}
-
-	for _, p := range state.Players{
-		playerStrs = append(playerStrs, SpriteToString(p)) 
-	}
+	playerStr := SpriteToString(state.Players[0])
 
 	bulletStrs := []string{}
 	
 	for _, b := range state.Bullets{
 		bulletStrs = append(bulletStrs, BulletToString(b))
 	}
-
-	var playerStrings = strings.Join(playerStrs, ",")
 	var bulletStrings = strings.Join(bulletStrs, ",")
 
 
-	return fmt.Sprintf("P[%s]|B[%s]", playerStrings,bulletStrings)
+	return fmt.Sprintf("P[%s]|B[%s]", playerStr,bulletStrings)
 }
 
 func DecodeGameState(s string) (*GameState, error){
