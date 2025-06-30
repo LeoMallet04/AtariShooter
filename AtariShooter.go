@@ -122,27 +122,25 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var remoteStateMutex sync.RWMutex
+		
 	localState := &GameState{
 		Bullets: []*Bullet{},
 		Players: []*Sprite{},
 	}
-
+	
 	remoteState := &GameState{
 		Bullets: []*Bullet{},
 		Players: []*Sprite{},
 	}
 
-	
+	localState.Players = initPlayers(1,localState.Players)
 
-	players:= []Sprite{}
-	dirs:= []rune{}
-	for p := range playerC{
-		players =append(players, p)
-		dirs = append(dirs, 'd')	
-		localState.Players = append(localState.Players, &players[len(players)-1])
-	}
 
-	ticker := time.NewTicker(50 * time.Millisecond)
+	dirs := make([]rune, 2)
+	dirs = append(dirs, 'd')
+
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
 	running := true
