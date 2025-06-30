@@ -97,8 +97,8 @@ func SyncGameState(localState *GameState, link *PP2PLink.PP2PLink, sendAddress s
 
 
 func main() {
-	enderecoLocal := "192.168.1.68:8080"
-	enderecoRemote := "192.168.1.68:8085"
+	enderecoLocal := "localhost:8080"
+	enderecoRemote := "localhost:8085"
 
 	link := PP2PLink.NewPP2PLink(enderecoLocal, true)
 
