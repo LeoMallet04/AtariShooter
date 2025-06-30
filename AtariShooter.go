@@ -15,7 +15,7 @@ import (
 
 type GameState struct{
 	Bullets []*Bullet
-	Players []*Sprite
+	Players []*Sprite	
 }
 
 
