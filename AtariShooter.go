@@ -169,14 +169,14 @@ func main() {
 		
 
 		w, h := screen.Size() // pega largura (w) e altura (h) da tela
-		recvState := SyncGameState(localState,link,enderecoRemote)
-		if recvState != nil{
-			remoteState = recvState
-		}
+		newBullets := []*Bullet{}
+
+
 
 		// atualiza e desenhas as balas
+		remoteStateMutex.RLock()
 		allBullets := append(localState.Bullets,remoteState.Bullets...)
-		newBullets := []*Bullet{}
+		remoteStateMutex.RUnlock()
 
 		for _, b := range allBullets {
 			b.Update()
@@ -190,7 +190,7 @@ func main() {
 			}
 		}
 		localState.Bullets = newBullets
-
+		
 		screen.Show()
 		for screen.HasPendingEvent() {
 			ev := screen.PollEvent()
