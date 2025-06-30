@@ -108,8 +108,8 @@ func SyncGameState(localState *GameState, link *PP2PLink.PP2PLink, sendAddress s
 
 
 func main() {
-	enderecoLocal := "localhost:8080"
-	enderecoRemote := "localhost:8085"
+	enderecoLocal := "localhost:8085"
+	enderecoRemote := "localhost:8080"
 
 	link := PP2PLink.NewPP2PLink(enderecoLocal, true)
 
@@ -127,11 +127,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+
+	var remoteStateMutex sync.RWMutex
+		
+		
 	var remoteStateMutex sync.RWMutex
 		
 	localState := &GameState{
 		Bullets: []*Bullet{},
 		Players: []*Sprite{},
+		bullet: NewBullet(-1,-1,'>'),
 	}
 	
 	remoteState := &GameState{
@@ -155,22 +160,16 @@ func main() {
 
 		updated := SyncGameState(localState, link, enderecoRemote)
 		if updated != nil {
-			remoteStateMutex.Lock()
 			remoteState = updated
-			remoteStateMutex.Unlock()
 		}
 		
-		remoteStateMutex.RLock()
 		for _, p := range remoteState.Players {
 			p.Draw(screen)
 		}
-		remoteStateMutex.RUnlock()
 		
-		remoteStateMutex.RLock()
 		for _, p := range localState.Players {
 			p.Draw(screen)
 		}
-		remoteStateMutex.RUnlock()
 		
 
 		w, h := screen.Size() // pega largura (w) e altura (h) da tela
@@ -179,11 +178,12 @@ func main() {
 
 
 		// atualiza e desenhas as balas
-		remoteStateMutex.RLock()
-		allBullets := append(localState.Bullets,remoteState.Bullets...)
-		remoteStateMutex.RUnlock()
+		if localState.bullet.X != -1 || localState.bullet.Y != -1 {
+			localState.Bullets = append(localState.Bullets, localState.bullet)
+			localState.bullet  = NewBullet(-1, -1, '>')
+		}
 
-		for _, b := range allBullets {
+		for _, b := range localState.Bullets {
 			b.Update()
 			//Verifica se a posição x,yu da bala não é nula
 			if b.X >= 0 && b.Y >= 0{
