@@ -9,12 +9,14 @@ import (
 )
 
 type Sprite struct {
+	Id int
 	Char rune
 	X, Y int
 }
 
-func NewSprite(char rune, x, y int) *Sprite {
+func NewSprite(id int, char rune, x, y int) *Sprite {
 	return &Sprite{
+		Id: id,
 		Char: char,
 		X:    x,
 		Y:    y,
@@ -45,25 +47,29 @@ func (s *Sprite) Move(direction rune) {
 }
 
 func SpriteToString(s *Sprite) string{
-	return fmt.Sprintf("%c;%d,%d",s.Char, s.X, s.Y)
+	return fmt.Sprintf("%d;%c;%d;%d",s.Id,s.Char, s.X, s.Y)
 }
 
 func SpriteFromString(str string) (*Sprite, error){
 	parts := strings.Split(str, ";")
-	if len(parts) != 3 {
+	if len(parts) != 4 {
 		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, número de args: %s", str)
 	}
-	char := []rune(parts[0])
+	id, err := strconv.Atoi(parts[0])
+	if err != nil{
+		return nil, fmt.Errorf("ERRO: conversão de volta para a bala, Id: %d",id)
+	}
+	char := []rune(parts[1])
 	if len(char) != 1{
 		return nil, fmt.Errorf("ERRO: conversão de volta para a bala, Char: %c",char)
 	}
-	x, err := strconv.Atoi(parts[1])
+	x, err := strconv.Atoi(parts[2])
 	if err != nil {
 		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, X: %d", x)
 	}
-	y, err := strconv.Atoi(parts[2])
+	y, err := strconv.Atoi(parts[3])
 	if err != nil {
 		return nil, fmt.Errorf("ERRO: conversao de volta para a bala, Y: %d", y)
 	}
-	return &Sprite{Char: char[0], X: x, Y: y}, nil
+	return &Sprite{Id: id, Char: char[0], X: x, Y: y}, nil
 }
