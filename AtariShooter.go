@@ -244,8 +244,7 @@ func moveSprites(ev tcell.Event, localState *GameState,dirs[]rune, running *bool
 				case 'd':
 					bx, by = localState.Players[0].X+1, localState.Players[0].Y
 				}
-				bullet := NewBullet(bx,by,dirs[0])
-				localState.Bullets = append(localState.Bullets, bullet)
+				localState.bullet = NewBullet(bx,by,dirs[0])
 			case 'q':
 				*running = false
 			}
