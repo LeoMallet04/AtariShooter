@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"atari-shooter/PP2PLink"
@@ -102,12 +103,6 @@ func main() {
 
 	link := PP2PLink.NewPP2PLink(enderecoLocal, true)
 
-	link.Start(enderecoRemote)
-
-	playerC:= make(chan Sprite)
-
-
-	go initPlayers(2,playerC)
 
 	//Cria nova tela
 	screen, err := tcell.NewScreen()
@@ -221,35 +216,6 @@ func moveSprites(ev tcell.Event, localState *GameState,dirs[]rune, running *bool
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
 	switch ev.Key() {
-		// Player 2 - setas
-		case tcell.KeyUp:
-			dirs[1] = 'w'
-			localState.Players[1].Move('w')
-		case tcell.KeyDown:
-			dirs[1] = 's'
-			localState.Players[1].Move('s')
-		case tcell.KeyLeft:
-			dirs[1] = 'a'
-			localState.Players[1].Move('a')
-		case tcell.KeyRight:
-			dirs[1] = 'd'
-			localState.Players[1].Move('d')
-		case tcell.KeyEnter:
-			var bx, by int
-			switch dirs[1] {
-			case 'w':
-				bx, by = localState.Players[1].X, localState.Players[1].Y-1
-			case 'a':
-				bx, by = localState.Players[1].X-1, localState.Players[1].Y
-			case 's':
-				bx, by = localState.Players[1].X, localState.Players[1].Y+1
-			case 'd':
-				bx, by = localState.Players[1].X+1, localState.Players[1].Y
-			}
-			bullet := NewBullet(bx, by, dirs[1])
-			bullet.Char = '*' // Diferencia os tiros do player 2
-			localState.Bullets = append(localState.Bullets, bullet)
-
 		// Player 1 - wasd + e para atirar
 		case tcell.KeyRune:
 			switch ev.Rune() {
