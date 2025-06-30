@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"sync"
 	"time"
 
 	"atari-shooter/PP2PLink"
@@ -17,9 +16,6 @@ import (
 type GameState struct{
 	Bullets []*Bullet
 	Players []*Sprite
-	Players []*Sprite	
-	Players []*Sprite
-	bullet    *Bullet	
 	bullet    *Bullet	
 }
 
@@ -59,17 +55,6 @@ func DecodeGameState(s string) (*GameState, error){
 		if err != nil {
 			return nil, err
 		}
-			state.Bullets = append(state.Bullets, b)
-		b, err := BulletFromString(bClean)
-		if err != nil {
-			return nil, err
-		}
-			state.Bullets = append(state.Bullets, b)
-		}
-	}
-
-	return state, nil
-}
 		if b.X != -1 || b.Y != -1{ 
 			state.Bullets = append(state.Bullets, b)
 		}
@@ -77,7 +62,6 @@ func DecodeGameState(s string) (*GameState, error){
 
 	return state, nil
 }
-		if b.X != -1 || b.Y != -1{ 
 
 // comunica com o outro processo e atualiza as balas
 
@@ -126,12 +110,6 @@ func main() {
 	if err := screen.Init(); err != nil {
 		log.Fatal(err)
 	}
-
-
-	var remoteStateMutex sync.RWMutex
-		
-		
-	var remoteStateMutex sync.RWMutex
 		
 	localState := &GameState{
 		Bullets: []*Bullet{},
