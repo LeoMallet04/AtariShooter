@@ -200,18 +200,16 @@ func main() {
 }
 
 
+func initPlayers(playerId int, players []*Sprite) []*Sprite{
+	symbol:= rune('@' +playerId)
+	x:= 15 *playerId+1
+	y:= 10 *playerId+1
 
-func initPlayers(quantPlayer int, playerC chan Sprite){
-	for i:= 0; i < quantPlayer; i++{
-		symbol:= rune('@' +i)
-		x:= 15 *i+1
-		y:= 10 *i+1
+	player := NewSprite(playerId,symbol,x,y)
 
-		player := NewSprite(symbol,x,y)
-
-		playerC <- *player
-	}
-	close(playerC)
+	players = append(players, player)
+	
+	return players
 }
 
 
