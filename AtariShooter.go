@@ -214,6 +214,10 @@ func initPlayers(playerId int, players []*Sprite) []*Sprite{
 
 
 func moveSprites(ev tcell.Event, localState *GameState,dirs[]rune, running *bool){
+	if len(localState.Players) == 0 || len(dirs) == 0{
+		fmt.Println("Aviso: localState.Players ou dirs está vazio!")
+		return
+	}
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
 	switch ev.Key() {
